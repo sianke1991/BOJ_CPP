@@ -14,7 +14,7 @@ int main() {
         cin >> B[i];
     }
     sort(A, A+N);
-    sort(B, B+N, greater<int>()); //³»¸²Â÷¼ø
+    sort(B, B+N, greater<int>()); //ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬
 
     int sum=0;
     for (int i=0; i<N; i++) {
