@@ -1,0 +1,10 @@
+1. Git Bash Here
+2. git init
+3. git remote add origin [repoAddr]
+  eg. git remote add origin https://github.com/sianke1991/BOJ_CPP
+4. git add .
+5. git commit -m "[commitMsg]"
+  eg. git commit -m "20220814"
+  Please tell me who you are -> git config --global user.email "[emailAddr]"
+?? git fetch
+6. git push origin master <-> git pull origin master
