@@ -12,7 +12,7 @@ int main() {
         cin >> weight[i];
     }
 
-    sort(weight, weight+N, greater<int>()); //³»¸²Â÷¼ø
+    sort(weight, weight+N, greater<int>()); //ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬
     int maxWeight = 0;
     for (int i=0; i<N; i++) {
         int localWeight = (i+1)*weight[i];
