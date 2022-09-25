@@ -8,6 +8,9 @@ vector<char> positionArr;
 int numServedPeople = 0;
 
 void input() {
+    //ios_base::sync_with_stdio(0);
+    //cin.tie(0); //cout.tie(0);
+    //ìœ„ì™€ ê°™ì´ ì„¤ì •í•œ ì´í›„ì—ëŠ” printf / scanfë¥¼ ì‚¬ìš©í•˜ì§€ ì•Šì•„ì•¼ í•œë‹¤.
     cin >> N >> K;
     char lcTemp;
 
@@ -17,7 +20,7 @@ void input() {
     }
 }
 
-// °¡´ÉÇÑ ¿ŞÂÊ¿¡ ÀÖ´Â ÇÜ¹ö°ÅºÎÅÍ ´ëÁ¢ÇÑ´Ù.
+// ê°€ëŠ¥í•œ ì™¼ìª½ì— ìˆëŠ” í–„ë²„ê±°ë¶€í„° ëŒ€ì ‘í•œë‹¤.
 void serve(int idxPerson) {
     for (int i=idxPerson-K; i<= idxPerson+K; i++) {
         if (i<0 || i>=N) continue; //index out of bounds
