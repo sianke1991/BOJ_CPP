@@ -12,10 +12,10 @@ int main() {
         l.push_back(ch);
     }
     list<char>::iterator t = l.end();
-    int M; //¸í·É¾î °³¼ö
+    int M; //ëª…ë ¹ì–´ ê°œìˆ˜
     cin >> M;
     for (int i=0; i<M; i++) {
-        char cmd; //¸í·É¾î (L, D, B, P)
+        char cmd; //ëª…ë ¹ì–´ (L, D, B, P)
         cin >> cmd;
         switch (cmd)
         {
