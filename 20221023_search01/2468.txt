@@ -1,0 +1,66 @@
+#include <bits/stdc++.h> //여러 헤더 파일을 한 번에 인클루드 한다.
+#define X first
+#define Y second
+
+int dx[] = {1, 0, -1, 0};
+int dy[] = {0, 1, 0, -1};
+int height[101][101];
+int maxHeight;
+int N; //the size of the map
+using namespace std;
+
+/**특정 강수량에 따른 연결요소의 개수를 구한다.*/
+//해당 함수의 논리적 오류 존재함
+int numConnectedComponents(int precipitation) {
+    int result = 0;
+    int vis[101][101] = {0};
+    for (int i=0; i<N; i++) {
+        for (int j=0; j<N; j++) {
+            //DFS 시작 조건
+            if (vis[i][j]==0 && height[i][j]>precipitation) {
+                result++;
+                stack<pair<int, int>> s;
+                vis[i][j] = 1;
+                s.push({i, j});
+                //until s becomes empty
+                while (!s.empty()) {
+                    pair<int, int> curNode = s.top();
+                    s.pop();
+                    for (int dir=0; dir<4; dir++) {
+                        int nx = curNode.X+dx[dir];
+                        int ny = curNode.Y+dy[dir];
+
+                        if (nx<0 || nx>=N || ny<0 || ny>=N) continue; //out of bounds
+                        if (vis[nx][ny]!=0) continue; //has already visited
+                        if (height[nx][ny]<=precipitation); //invalid position
+
+                        vis[nx][ny] = 1;
+                        s.push({nx, ny});
+                    } //dir loop
+                } //until s becomes empty
+            } //DFS 시작 조건
+        } //j loop
+    } //i loop
+    return result;
+}
+
+int main() {
+    cin >> N;
+    for (int i=0; i<N; i++) {
+        for (int j=0; j<N; j++) {
+            int heightInput;
+            cin >> heightInput;
+            if (maxHeight < heightInput) maxHeight = heightInput;
+            height[i][j] = heightInput;
+        } //j loop
+    } //i loop
+
+    int maxNumConnectedComponents = 1;
+    for (int i=1; i<maxHeight; i++) {
+        int curNumConnectedComponents = numConnectedComponents(i);
+        if (maxNumConnectedComponents < curNumConnectedComponents) maxNumConnectedComponents = curNumConnectedComponents;
+    } //강수량 루프 (i loop)
+
+    cout << maxNumConnectedComponents;
+    return 0;
+}
