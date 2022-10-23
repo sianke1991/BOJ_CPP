@@ -1,4 +1,4 @@
-#include <bits/stdc++.h> //¿©·¯ Çì´õ ÆÄÀÏÀ» ÇÑ ¹ø¿¡ ÀÎÅ¬·çµå ÇÑ´Ù.
+#include <bits/stdc++.h> //ì—¬ëŸ¬ í—¤ë” íŒŒì¼ì„ í•œ ë²ˆì— ì¸í´ë£¨ë“œ í•œë‹¤.
 #define X first
 #define Y second
 
@@ -9,14 +9,14 @@ int maxHeight;
 int N; //the size of the map
 using namespace std;
 
-/**Æ¯Á¤ °­¼ö·®¿¡ µû¸¥ ¿¬°á¿ä¼ÒÀÇ °³¼ö¸¦ ±¸ÇÑ´Ù.*/
-//ÇØ´ç ÇÔ¼öÀÇ ³í¸®Àû ¿À·ù Á¸ÀçÇÔ
+/**íŠ¹ì • ê°•ìˆ˜ëŸ‰ì— ë”°ë¥¸ ì—°ê²°ìš”ì†Œì˜ ê°œìˆ˜ë¥¼ êµ¬í•œë‹¤.*/
+//í•´ë‹¹ í•¨ìˆ˜ì˜ ë…¼ë¦¬ì  ì˜¤ë¥˜ ì¡´ì¬í•¨
 int numConnectedComponents(int precipitation) {
     int result = 0;
     int vis[101][101] = {0};
     for (int i=0; i<N; i++) {
         for (int j=0; j<N; j++) {
-            //DFS ½ÃÀÛ Á¶°Ç
+            //DFS ì‹œì‘ ì¡°ê±´
             if (vis[i][j]==0 && height[i][j]>precipitation) {
                 result++;
                 stack<pair<int, int>> s;
@@ -32,13 +32,13 @@ int numConnectedComponents(int precipitation) {
 
                         if (nx<0 || nx>=N || ny<0 || ny>=N) continue; //out of bounds
                         if (vis[nx][ny]!=0) continue; //has already visited
-                        if (height[nx][ny]<=precipitation); //invalid position
+                        if (height[nx][ny]<=precipitation) continue; //invalid position
 
                         vis[nx][ny] = 1;
                         s.push({nx, ny});
                     } //dir loop
                 } //until s becomes empty
-            } //DFS ½ÃÀÛ Á¶°Ç
+            } //DFS ì‹œì‘ ì¡°ê±´
         } //j loop
     } //i loop
     return result;
@@ -59,7 +59,7 @@ int main() {
     for (int i=1; i<maxHeight; i++) {
         int curNumConnectedComponents = numConnectedComponents(i);
         if (maxNumConnectedComponents < curNumConnectedComponents) maxNumConnectedComponents = curNumConnectedComponents;
-    } //°­¼ö·® ·çÇÁ (i loop)
+    } //ê°•ìˆ˜ëŸ‰ ë£¨í”„ (i loop)
 
     cout << maxNumConnectedComponents;
     return 0;
