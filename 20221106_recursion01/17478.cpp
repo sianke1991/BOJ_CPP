@@ -1,19 +1,30 @@
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 int N;
 
+void printUnderscore(int depth) {
+    for (int i=0; i<depth; i++) cout << "____";
+}
+
 void recursive(int depth) {
-    for (int i=0; i<depth; i++) cout << "____"; cout << "\"Àç±ÍÇÔ¼ö°¡ ¹º°¡¿ä?\"\n";
-    for (int i=0; i<depth; i++) cout << "____"; cout << "\"Àß µé¾îº¸°Ô. ¿¾³¯¿¾³¯ ÇÑ »ê ²À´ë±â¿¡ ÀÌ¼¼»ó ¸ðµç Áö½ÄÀ» Åë´ÞÇÑ ¼±ÀÎÀÌ ÀÖ¾ú¾î.\n";
-    for (int i=0; i<depth; i++) cout << "____"; cout << "¸¶À» »ç¶÷µéÀº ¸ðµÎ ±× ¼±ÀÎ¿¡°Ô ¼ö¸¹Àº Áú¹®À» Çß°í, ¸ðµÎ ÁöÇý·Ó°Ô ´ë´äÇØ ÁÖ¾úÁö.\n";
-    for (int i=0; i<depth; i++) cout << "____"; cout << "±×ÀÇ ´äÀº ´ëºÎºÐ ¿Ç¾Ò´Ù°í ÇÏ³×. ±×·±µ¥ ¾î´À ³¯, ±× ¼±ÀÎ¿¡°Ô ÇÑ ¼±ºñ°¡ Ã£¾Æ¿Í¼­ ¹°¾ú¾î.\"\n";
-    if (depth<N-1) recursive(depth+1);
-    for (int i=0; i<depth; i++) cout << "____"; cout << "¶ó°í ´äº¯ÇÏ¿´Áö.\n";
+    //base case
+    if (depth >= N) {
+        printUnderscore(depth); cout << "\"ìž¬ê·€í•¨ìˆ˜ê°€ ë­”ê°€ìš”?\"\n";
+        printUnderscore(depth); cout << "\"ìž¬ê·€í•¨ìˆ˜ëŠ” ìžê¸° ìžì‹ ì„ í˜¸ì¶œí•˜ëŠ” í•¨ìˆ˜ë¼ë„¤\"\n";
+        printUnderscore(depth); cout << "ë¼ê³  ë‹µë³€í•˜ì˜€ì§€.\n";
+        return;
+    }
+    printUnderscore(depth); cout << "\"ìž¬ê·€í•¨ìˆ˜ê°€ ë­”ê°€ìš”?\"\n";
+    printUnderscore(depth); cout << "\"ìž˜ ë“¤ì–´ë³´ê²Œ. ì˜›ë‚ ì˜›ë‚  í•œ ì‚° ê¼­ëŒ€ê¸°ì— ì´ì„¸ìƒ ëª¨ë“  ì§€ì‹ì„ í†µë‹¬í•œ ì„ ì¸ì´ ìžˆì—ˆì–´.\n";
+    printUnderscore(depth); cout << "ë§ˆì„ ì‚¬ëžŒë“¤ì€ ëª¨ë‘ ê·¸ ì„ ì¸ì—ê²Œ ìˆ˜ë§Žì€ ì§ˆë¬¸ì„ í–ˆê³ , ëª¨ë‘ ì§€í˜œë¡­ê²Œ ëŒ€ë‹µí•´ ì£¼ì—ˆì§€.\n";
+    printUnderscore(depth); cout << "ê·¸ì˜ ë‹µì€ ëŒ€ë¶€ë¶„ ì˜³ì•˜ë‹¤ê³  í•˜ë„¤. ê·¸ëŸ°ë° ì–´ëŠ ë‚ , ê·¸ ì„ ì¸ì—ê²Œ í•œ ì„ ë¹„ê°€ ì°¾ì•„ì™€ì„œ ë¬¼ì—ˆì–´.\"\n";
+    recursive(depth+1);
+    printUnderscore(depth); cout << "ë¼ê³  ë‹µë³€í•˜ì˜€ì§€.\n";
 }
 
 int main() {
     cin >> N;
-    cout << "¾î´À ÇÑ ÄÄÇ»ÅÍ°øÇÐ°ú ÇÐ»ýÀÌ À¯¸íÇÑ ±³¼ö´ÔÀ» Ã£¾Æ°¡ ¹°¾ú´Ù.\n";
+    cout << "ì–´ëŠ í•œ ì»´í“¨í„°ê³µí•™ê³¼ í•™ìƒì´ ìœ ëª…í•œ êµìˆ˜ë‹˜ì„ ì°¾ì•„ê°€ ë¬¼ì—ˆë‹¤.\n";
     recursive(0);
     return 0;
 }
