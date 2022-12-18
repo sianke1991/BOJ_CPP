@@ -3,7 +3,7 @@
 using namespace std;
 
 int n;
-int board[16384][20][20];
+int board[32768][20][20];
 const int UP    = 1;
 const int DOWN  = 2;
 const int LEFT  = 3;
@@ -166,7 +166,6 @@ void moveLeft(int boardTo, int boardFrom) {
  * boardFrom에서 오른쪽으로 이동한 결과를 boardTo에 저장한다.
  */
 void moveRight(int boardTo, int boardFrom) {
-	//cout << "moveRight, " << boardTo << "\n";
 	copyBoard(boardTo, boardFrom);
 	for (int col=n-2; col>=0; col--) {
 		for (int row=0; row<n; row++) {			
@@ -203,22 +202,18 @@ void recursion(int numMoves, int boardNumber) {
 		if (localMax>globalMax) globalMax = localMax;
 		return;
 	}
-//	cout << "(0)" << boardNumber << "\n";
 	moveUp(boardNumber|(UP<<(3*numMoves)), boardNumber);
 	recursion(numMoves+1, boardNumber|(UP<<(3*numMoves)));
-//	boardNumber&=~(UP<<(3*numMoves-3));
-//	cout << "(1)" << boardNumber << "\n";
+	//boardNumber&=~(UP<<(3*numMoves));
 	moveDown(boardNumber|(DOWN<<(3*numMoves)), boardNumber);
 	recursion(numMoves+1, boardNumber|(DOWN<<(3*numMoves)));
-//	boardNumber&=~(DOWN<<(3*numMoves-3));
-//	cout << "(2)" << boardNumber << "\n";
+	//boardNumber&=~(DOWN<<(3*numMoves));
 	moveLeft(boardNumber|(LEFT<<(3*numMoves)), boardNumber);
 	recursion(numMoves+1, boardNumber|(LEFT<<(3*numMoves)));
-//	boardNumber&=~(LEFT<<(3*numMoves-3));
-//	cout << "(3)" << boardNumber << "\n";
+	//boardNumber&=~(LEFT<<(3*numMoves));
 	moveRight(boardNumber|(RIGHT<<(3*numMoves)), boardNumber);
 	recursion(numMoves+1, boardNumber|(RIGHT<<(3*numMoves)));
-//	boardNumber&=~(RIGHT<<(3*numMoves-3));
+	//boardNumber&=~(RIGHT<<(3*numMoves));
 }
 
 
