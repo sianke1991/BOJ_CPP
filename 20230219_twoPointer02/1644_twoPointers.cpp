@@ -21,7 +21,7 @@ int main() {
 			partialSum-=primes[leftIdx];
 			leftIdx++;
 		} else {
-			if (rightIdx>=N-1) break;
+			if (rightIdx>=numPrimes-1) break;
 			rightIdx++;
 			partialSum+=primes[rightIdx];
 		}
