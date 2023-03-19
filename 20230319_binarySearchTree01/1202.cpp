@@ -12,10 +12,11 @@ string toString(pair<int, int> gem) {
 int main() {
 	int numGems, numBags;
 	cin >> numGems >> numBags;
-	vector<pair<int, int>> gems; //보석의 가치를 first 값으로, 보석의 질량을 second 값으로 넣는다.
+	vector<pair<long long, int>> gems; //보석의 가치를 first 값으로, 보석의 질량을 second 값으로 넣는다.
 	multiset<int> bags;
 	for (int i=0; i<numGems; i++) {
-		int mass, value;
+		int mass;
+		long long value;
 		cin >> mass >> value;
 		gems.push_back({-value, mass}); //가치가 높은 보석이 인덱스가 낮은 위치에 가도록 음의 부호를 붙인다.
 	} //i loop
@@ -25,7 +26,7 @@ int main() {
 		cin >> capacity;
 		bags.insert(capacity);
 	}
-	int sumValues = 0;
+	long long sumValues = 0; //int 사용 시 오버플로가 발생할 수 있다.
 	for (pair<int, int> gem:gems) {
 		set<int>::iterator bag = bags.lower_bound(gem.second);
 		if (bag==bags.end()) continue; //해당 보석을 담을 보석을 찾지 못할 경우 해당 보석은 스킵한다.
