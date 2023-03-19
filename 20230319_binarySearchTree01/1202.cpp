@@ -9,6 +9,11 @@ string toString(pair<int, int> gem) {
 보석은 가치있는 것부터 담고,
 담을 보석에 대해 가방은 용량이 작은 것 부터 사용한다.
 */
+/*
+가방을 담는 자료 구조에 대해-
+특정 값의 가방을 빠르게 찾아야 하므로 정렬된 배열이나 TreeSet을 사용할 수 있는데,
+또한 특정 가방을 제거하기도 해야 하므로 정렬된 배열보다는 TreeSet을 사용한다.
+*/
 int main() {
 	int numGems, numBags;
 	cin >> numGems >> numBags;
