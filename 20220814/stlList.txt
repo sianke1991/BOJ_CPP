@@ -1,7 +1,11 @@
 STL 정리 목록
 1. 기본 자료 구조
-pair, vecotr, list, stack, queue, deque
+pair, vector, list, stack, queue, deque, tuple
 2. 정렬과 관련된 함수
 sort, binary_search, upper_bound, lower_bound, unique
 3. 해시와 관련된 자료 구조
 unordered_map, unordered_set, unordered_multiset
+4. 트리와 관련된 자료 구조
+map, set, multiset
+5. 힙과 관련된 자료 구조
+priority_queue
