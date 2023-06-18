@@ -26,18 +26,19 @@ int main() {
     adjList[5].push_back({1, 6});
 
     int startingNode = 1;
-    int priceTables[7];
+    int priceTable[7];
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
     //최소 비용 테이블은 (시작 노드를 제외하고) 무한대로 초기화한다.
     for (int i=0; i<7; i++) {
-        priceTables[i] = INF;
+        priceTable[i] = INF;
     }
-    priceTables[startingNode] = 0;
+    priceTable[startingNode] = 0;
 
     //시작 노드에서 뻗어나가는 간선 정보를 우선순위 큐에 집어넣는 것으로 알고리즘을 시작한다.
     for (pair<int, int> nxtNodePair:adjList[startingNode]) {
-        pq.push(nxtNode);
+        priceTable[nxtNodePair.second] = nxtNodePair.first;
+        pq.push(nxtNodePair);
     }
 
     //우선순위 큐가 빌 때 까지 반복을 수행한다.
@@ -46,26 +47,25 @@ int main() {
         int currentPrice = pq.top().first;
         pq.pop();
 
-        if (currentPrice!=priceeTable[currentNode]) {
+        if (currentPrice!=priceTable[currentNode]) {
             //우선순위 큐에서 뽑아낸 비용 정보가 최소 비용 테이블에 들어있는 비용 정보와 다를 경우
             //우선순위 큐에서 뽑아낸 비용 정보는 별도의 처리 없이 버려진다. (해당 노드에 도착하는데 더 효율적인 방법을 미리 발견했으므로 덜 효율적인 방법은 무시된다.)
             continue;
         }
 
         for (pair<int, int> nxtNodePair:adjList[currentNode]) {
+            int nxtNode = nxtNodePair.second;
+            int nxtPrice = priceTable[currentNode] + nxtNodePair.first;
+            if (priceTable[nxtNode]>nxtPrice) { //nxtNode에 가는데 지금까지 발견한 방법보다 더 효율적인 방법을 찾은 경우-
+                priceTable[nxtNode] = nxtPrice;
+                pq.push({nxtPrice, nxtNode});
+            }
+        } //nxtNodePair loop
+    } //while loop
 
-
-
-
-        }
-
-
-
-
-
+    for (int price:priceTable) {
+        cout << price << ' ';
     }
-
-
 
     return 0;
 }
