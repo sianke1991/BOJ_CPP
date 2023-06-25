@@ -8,21 +8,21 @@ vector<pair<int, int>> adjList[1001]; //인접 리스트
 int distTable[1001]; //거리 테이블 (각 노드까지 가는데 가야 하는 최소 거리)
 int prevTable[1001]; //특정 노드에 도착하기 위해 출발 해야 하는 노드 (prevTable[도착 노드] = 출발 노드)
 int startingNode, endingNode; //시작 노드, 도착 노드
-vector<int> nodesInPath; //시작 노드에서 출발하여 도착 노드에 도달하기까지 거쳐야 하는 노드를 역순으로 작성한 vector
+stack<int> nodesInPath; //시작 노드에서 출발하여 도착 노드에 도달하기까지 거쳐야 하는 노드를 역순으로 작성한 stack
 
 
 //시작 노드에서 출발하여 nextNode에 도달하기 위해 거쳐야 하는 경로를 찾아 nodesInPath를 구성한다.
 void setPath() {
     if (startingNode == endingNode) {
-        nodesInPath.push_back(startingNode);
+        nodesInPath.push(startingNode);
         return;
     }
     int currentNode = endingNode;
     do {
-        nodesInPath.push_back(currentNode);
+        nodesInPath.push(currentNode);
         currentNode = prevTable[currentNode];
     } while (currentNode!=startingNode);
-    nodesInPath.push_back(startingNode);
+    nodesInPath.push(startingNode);
 }
 
 int main() {
@@ -65,27 +65,23 @@ int main() {
         } //p1 loop
     } //while loop
 
-    //setPath(); //경로 구성
-    if (startingNode == endingNode) {
-        nodesInPath.push_back(startingNode);
-    } else {
-        int currentNode = endingNode;
-        do {
-            nodesInPath.push_back(currentNode);
-            currentNode = prevTable[currentNode];
-        } while (currentNode!=startingNode);
-        nodesInPath.push_back(startingNode);
+    setPath();
+    int pathLength = nodesInPath.size();
+    string path = "";
+    while (!nodesInPath.empty()) {
+        //printf("%d\n", nodesInPath.top());
+        path += (to_string(nodesInPath.top()) + " ");
+        nodesInPath.pop();
     }
-    reverse(nodesInPath.begin(), nodesInPath.end()); //경로 출력 시 범위 기반 for loop를 사용하기 위해 nodesInPath를 뒤집어준다.
+
+
 
     //최소 거리 출력
     printf("%d\n", distTable[endingNode]);
     //경로 상 노드 개수 출력
-    printf("%d\n", nodesInPath.size());
+    printf("%d\n", pathLength);
     // 경로 출력
-    for (int node:nodesInPath) {
-        printf("%d ", node);
-    }
+    cout << path;
 
     return 0;
 }
