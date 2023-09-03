@@ -1,0 +1,33 @@
+
+public class Main {
+    private static final int ROOT = 1;
+    private static int unused = 2;
+    private static final int MX = 500 * 41 + 5;
+    private static boolean[] chk = new boolean[MX];
+    private static java.util.Collection<java.util.TreeMap<String, Integer>> nxt = new java.util.ArrayList<>();
+
+    private static void init() {
+        for (int i=0; i<MX; i++)
+            nxt.add(new java.util.TreeMap<String, Integer>());
+    }
+
+    private static void insert(String dir) {
+        String[] arr = dir.split("\\");
+        int cur = ROOT;
+        for (String word:arr) {
+            if (!nxt.get(cur).containsKey(word)) {
+                nxt.get(cur).put(word, unused++);
+            }
+            cur = nxt.get(cur).get(word);
+        }
+        chk[cur] = true;
+    }
+
+
+    public static void main(String[] args) {
+
+
+
+    }
+
+}
