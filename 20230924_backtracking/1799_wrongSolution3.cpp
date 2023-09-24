@@ -3,8 +3,8 @@
 
 using namespace std;
 
-vector<pair<int, int>> possibleSquares[19];
-bool usedUDiag[19];
+vector<pair<int, int>> possibleSquares[20];
+bool usedUDiag[20];
 int optResult = 0;
 int Size;
 
