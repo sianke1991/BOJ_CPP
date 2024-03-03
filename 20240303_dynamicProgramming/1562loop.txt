@@ -1,0 +1,115 @@
+package problem1562;
+
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main0000 {
+	private static class Pair {
+		public final int first;
+		public final int second;
+		private Pair(int first, int second) {
+			this.first = Math.min(first, second);
+			this.second = Math.max(first, second);
+		}
+		private static int hash(int first, int second) {
+			return Math.min(first, second)*31+Math.max(first, second);
+		}
+		@Override
+		public int hashCode() {
+			return Pair.hash(this.first, this.second);
+		}
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof Main0000.Pair))
+				return false;
+			Pair that = (Pair) o;
+			return this.first==that.first && this.second==that.second;
+		}
+		@Override
+		public String toString() {
+			return new StringBuffer("{").append(this.first).append(", ").append(this.second).append("}").toString();
+		}
+		private static final Map<Integer, Pair> INSTANCE_MAP = new HashMap<>();
+		private static void reset() {
+			if (!Pair.INSTANCE_MAP.isEmpty())
+				return;
+			for (int i=0; i<=9; i++) {
+				for (int j=0; j<=9; j++) {
+					Pair obj = new Pair(i, j);
+					Pair.INSTANCE_MAP.put(obj.hashCode(), obj);
+				}
+			}
+		}
+		public static Pair of(int i, int j) {
+			Pair.reset();
+			return Pair.INSTANCE_MAP.get(Pair.hash(i, j));
+		}
+		
+		public static Pair of(int digit, Pair digits) {
+			if (digit<digits.first) return Pair.of(digit, digits.second);
+			else if (digit>digits.second) return Pair.of(digits.first, digit);
+			else return digits;
+		}
+	}
+	
+	private static class MapPair {
+		public final HashMap<Pair, BigInteger> map;
+		
+		public MapPair() {
+			this.map = new HashMap();
+		}
+	}
+	
+	private static BigInteger add(BigInteger val0, BigInteger val1) {
+		if (val0==null)
+			return val1==null ? BigInteger.ZERO : val1;
+		else
+			return val1==null ? val0 : val0.add(val1);
+	}
+	
+	private static MapPair[][] dpArray = new MapPair[101][10];
+
+
+	public static void main(String[] args) {
+		for (int i=0; i<101; i++) {
+			for (int j=0; j<10; j++) {
+				dpArray[i][j] = new MapPair();
+			}
+		}
+		
+		//초기값 설정
+		for (int i=1; i<=9; i++) {
+			dpArray[1][i].map.put(Pair.of(i, i), BigInteger.ONE);
+		}
+		
+		for (int i=1; i<40; i++) {
+			int j=0;
+			for (Map.Entry<Pair, BigInteger> entry:dpArray[i][j].map.entrySet()) {
+				dpArray[i+1][1].map.put(Pair.of(1, entry.getKey()), add(dpArray[i+1][1].map.get(Pair.of(1, entry.getKey())), entry.getValue()));
+			} //entry loop
+			
+			for (j=1; j<=8; j++) {
+				for (Map.Entry<Pair, BigInteger> entry:dpArray[i][j].map.entrySet()) {
+					dpArray[i+1][j-1].map.put(Pair.of(j-1, entry.getKey()), add(dpArray[i+1][j-1].map.get(Pair.of(j-1, entry.getKey())), entry.getValue()));
+					dpArray[i+1][j+1].map.put(Pair.of(j+1, entry.getKey()), add(dpArray[i+1][j+1].map.get(Pair.of(j+1, entry.getKey())), entry.getValue()));
+				}
+			}
+			
+			j = 9;
+			for (Map.Entry<Pair, BigInteger> entry:dpArray[i][j].map.entrySet()) {
+				dpArray[i+1][8].map.put(Pair.of(8, entry.getKey()), add(dpArray[i+1][8].map.get(Pair.of(8, entry.getKey())), entry.getValue()));
+			} //entry loop
+		}
+		
+		BigInteger result = BigInteger.ZERO;
+		for (int i=0; i<10; i++) {
+			for (int j=1; j<=40; j++) {
+				result = add(result, dpArray[j][i].map.get(Pair.of(0, 9)));
+			}
+		}
+		System.out.println(result);
+
+	}
+
+}
