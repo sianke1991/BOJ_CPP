@@ -1,0 +1,211 @@
+public class Main {
+	
+	/**
+	 * 회전 방향 열거체
+	 * @author sianke1991
+	 */
+	private static enum RotateDirection {
+		/**시계 방향*/
+		CLOCKWISE,
+		/**반시계 방향*/
+		COUNTER_CLOCKWISE,
+		/**무회전: 무회전의 반대 방향은 무회전 그 자체로 간주한다.*/
+		NONE;
+		
+		/**
+		 * 코드에 대응되는 회전 방향 객체를 반환한다.
+		 * @param code
+		 * @return
+		 */
+		public static RotateDirection of(int code) {
+			switch (code) {
+				case 1: return RotateDirection.CLOCKWISE;
+				case -1: return RotateDirection.COUNTER_CLOCKWISE;
+				default: return NONE;
+			}
+		}
+		
+		/**
+		 * 해당 회전 방향의 반대 방향을 반환한다.<br/>
+		 * 해당 회전 방향이 RotateDirection.NONE일 경우 RotateDirection.NONE을 반환한다.
+		 * @return
+		 */
+		public RotateDirection reverse() {
+			switch (this) {
+				case CLOCKWISE: return RotateDirection.COUNTER_CLOCKWISE;
+				case COUNTER_CLOCKWISE: return RotateDirection.CLOCKWISE;
+				case NONE: return RotateDirection.NONE;
+				default: throw new IllegalArgumentException();
+			}
+		}
+	}
+	
+	/**
+	 * 톱니바퀴 클래스
+	 * @author sianke1991
+	 */
+	private static class Gear {
+		private final int[] poles = new int[8];
+		
+		public Gear(String poleStr) {
+			for (int i=0; i<this.poles.length; i++) {
+				poles[i] = poleStr.charAt(i)-'0';
+			}
+		}
+		
+		public Gear rotate(RotateDirection direction) {
+			switch (direction) {
+				case CLOCKWISE: {
+					int tmp = this.poles[7];
+					for (int i=6; i>=0; i--) {
+						this.poles[i+1] = this.poles[i];
+					}
+					this.poles[0] = tmp;
+					
+					break;
+				}
+				case COUNTER_CLOCKWISE: {
+					int tmp = this.poles[0];
+					for (int i=0; i<7; i++) {
+						this.poles[i] = this.poles[i+1];
+					}
+					this.poles[7] = tmp;
+					break;
+				}
+				case NONE: {
+					break;
+				}
+			}
+			return this;
+		}
+		
+		/**
+		 * 입력받은 위치에 있는 극을 반환한다.
+		 * <table>
+		 * <tr><td>위치</td><td>위치 인덱스</td></tr>
+		 * <tr><td>상</td><td>0</td></tr>
+		 * <tr><td>우상</td><td>1</td></tr>
+		 * <tr><td>우</td><td>2</td></tr>
+		 * <tr><td>우하</td><td>3</td></tr>
+		 * <tr><td>하</td><td>4</td></tr>
+		 * <tr><td>좌하</td><td>5</td></tr>
+		 * <tr><td>좌</td><td>6</td></tr>
+		 * <tr><td>좌상</td><td>7</td></tr>
+		 * </table>
+		 * @param index
+		 * @return 입력받은 위치의 극이 N극일 경우 0 반환, S극일 경우 1 반환
+		 */
+		public int poleAt(int index) {
+			return this.poles[index];
+		}
+		
+		@Override
+		public String toString() {
+			return java.util.Arrays.toString(this.poles);
+		}
+	}
+	
+	private static class GearChain {
+		private final Gear[] gears = new Gear[4];
+		
+		public GearChain(String poleStr0, String poleStr1, String poleStr2, String poleStr3) {
+			this.gears[0] = new Gear(poleStr0);
+			this.gears[1] = new Gear(poleStr1);
+			this.gears[2] = new Gear(poleStr2);
+			this.gears[3] = new Gear(poleStr3);
+		}
+		
+		/**
+		 * 각 톱니바퀴의 12시 방향이 S극인지 여부를 판별하여 이를 정수로 나타낸다.
+		 * @return
+		 */
+		public int point() {
+			int result = 0;
+			if (this.gears[0].poleAt(0)==1) result+=1;
+			if (this.gears[1].poleAt(0)==1) result+=2;
+			if (this.gears[2].poleAt(0)==1) result+=4;
+			if (this.gears[3].poleAt(0)==1) result+=8;
+			return result;
+		}
+		
+		/**
+		 * 톱니바퀴 사이 인덱스에 따른 두 톱니바퀴의 극이 서로 다른지 여부를 반환한다.<br/>
+		 * 인덱스 0: 인덱스 0의 톱니바퀴와 인덱스 1의 톱니바퀴의 극이 서로 다른지 여부를 담는다.<br/>
+		 * 인덱스 1: 인덱스 1의 톱니바퀴와 인덱스 2의 톱니바퀴의 극이 서로 다른지 여부를 담는다.<br/>
+		 * 인덱스 2: 인덱스 2의 톱니바퀴와 인덱스 3의 톱니바퀴의 극이 서로 다른지 여부를 담는다.
+		 * @return
+		 */
+		public boolean[] checkOppositePoles() {
+			boolean[] result = new boolean[3];
+			for (int i=0; i<3; i++) {
+				result[i] = this.gears[i].poleAt(2)!=this.gears[i+1].poleAt(6); 
+			}
+			return result;
+		}
+		
+		
+		public GearChain rotateAt(int index, RotateDirection direction) {
+			RotateDirection[] directions = new RotateDirection[4];
+			directions[index] = direction;
+			boolean[] checkOppositePoles = this.checkOppositePoles();
+			switch (index) {
+				case 0: {
+							//0번 톱니바퀴와 1번 톱니바퀴가 다른 극이면 directions[0]의 반대 방향으로, 같은 극이면 RotateDirection.NONE으로 설정
+					directions[1] = checkOppositePoles[0] ? directions[0].reverse() : RotateDirection.NONE;
+					directions[2] = checkOppositePoles[1] ? directions[1].reverse() : RotateDirection.NONE;
+					directions[3] = checkOppositePoles[2] ? directions[2].reverse() : RotateDirection.NONE;
+					break;
+				}
+				case 1: {
+					directions[0] = checkOppositePoles[0] ? directions[1].reverse() : RotateDirection.NONE;
+					directions[2] = checkOppositePoles[1] ? directions[1].reverse() : RotateDirection.NONE;
+					directions[3] = checkOppositePoles[2] ? directions[2].reverse() : RotateDirection.NONE;
+					break;
+				}
+				case 2: {
+					directions[1] = checkOppositePoles[1] ? directions[2].reverse() : RotateDirection.NONE;
+					directions[0] = checkOppositePoles[0] ? directions[1].reverse() : RotateDirection.NONE;
+					directions[3] = checkOppositePoles[2] ? directions[2].reverse() : RotateDirection.NONE;
+					break;
+				}
+				case 3: {
+					directions[2] = checkOppositePoles[2] ? directions[3].reverse() : RotateDirection.NONE;
+					directions[1] = checkOppositePoles[1] ? directions[2].reverse() : RotateDirection.NONE;
+					directions[0] = checkOppositePoles[0] ? directions[1].reverse() : RotateDirection.NONE;
+					break;
+				}
+			}
+			for (int i=0; i<4; i++) {
+				this.gears[i].rotate(directions[i]);
+			}
+			
+			return this;
+		}
+		
+	}
+	
+	
+
+	public static void main(String[] args) {
+		java.util.Scanner sc = new java.util.Scanner(System.in);
+		String poleStr0 = sc.nextLine();
+		String poleStr1 = sc.nextLine();
+		String poleStr2 = sc.nextLine();
+		String poleStr3 = sc.nextLine();
+		GearChain gc = new GearChain(poleStr0, poleStr1, poleStr2, poleStr3);
+		int numRotates = Integer.parseInt(sc.nextLine());
+		int[] gearIndices = new int[numRotates];
+		int[] rotateDirections = new int[numRotates];
+		for (int i=0; i<numRotates; i++) {
+			String rotate = sc.nextLine();
+			gearIndices[i] = rotate.charAt(0)-'1';
+			rotateDirections[i] = rotate.charAt(2)=='-' ? -1 : 1; 	
+		}
+		sc.close();
+		for (int i=0; i<numRotates; i++) {
+			gc.rotateAt(gearIndices[i], RotateDirection.of(rotateDirections[i]));
+		}
+		System.out.println(gc.point());
+	}
+
+}
