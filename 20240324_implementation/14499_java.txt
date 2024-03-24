@@ -1,0 +1,225 @@
+package problem14499;
+
+public class Main {
+	
+	/**
+	 * 주사위가 이동할 수 있는 방향
+	 * @author sianke1991
+	 */
+	private static enum Direction {
+		NONE(0, 0),
+		EAST(0, 1),
+		WEST(0, -1),
+		NORTH(-1, 0),
+		SOUTH(1, 0);
+		
+		public final int dRow;
+		public final int dCol;
+		
+		private Direction (int dRow, int dCol) {
+			this.dRow = dRow;
+			this.dCol = dCol;
+		}
+	}
+	
+	/**
+	 * 주사위의 각 면의 이름
+	 * @author sianke1991
+	 */
+	private static enum FaceName {
+		TOP,
+		BOTTOM,
+		FRONT,
+		BACK,
+		LEFT,
+		RIGHT;
+	}
+	
+	/**
+	 * 지도의 각 칸의 위치를 나타내는 객체
+	 * @author sianke1991
+	 */
+	private static class Square {
+		public final int rowNum;
+		public final int colNum;
+		
+		private static Square[][] instanceArray = new Square[21][21];
+		
+		private Square(int rowNum, int colNum) {
+			this.rowNum = rowNum;
+			this.colNum = colNum;
+		}
+		
+		private static void reset() {
+			if (Square.instanceArray[0][0]!=null)
+				return;
+			for (int row=0; row<21; row++) {
+				for (int col=0; col<21; col++) {
+					Square.instanceArray[row][col] = new Square(row, col);
+				}
+			}
+		}
+		
+		public static Square of(int rowNum, int colNum) {
+			Square.reset();
+			try {
+				return Square.instanceArray[rowNum][colNum];
+			} catch (ArrayIndexOutOfBoundsException aiooe) {
+				return null;
+			}
+		}
+		
+		/**
+		 * 해당 칸 객체에서 입력받은 방향으로 한 칸 이동했을 때 나오는 칸 객체를 반환한다.<br/>
+		 * 
+		 * 입력받은 방향으로 한 칸 이동할 때 나오는 칸이 없는 경우 null을 반환한다.
+		 * @param direction
+		 * @param numRows
+		 * @param numCols
+		 * @return
+		 */
+		public Square nextSquareIn(Direction direction, int numRows, int numCols) {
+			Square result = Square.of(this.rowNum+direction.dRow, this.colNum+direction.dCol);
+			if (result==null)
+				return null;
+			else
+				return result.rowNum<numRows && result.colNum<numCols ? result : null;
+			
+		}
+	}
+	
+	private static class MMap {
+		private int[][] faces;
+		
+		public MMap(int numRows, int numCols) {
+			this.faces = new int[numRows][numCols];
+		}
+		
+		public MMap set(int rowNum, int colNum, int face) {
+			this.faces[rowNum][colNum] = face;
+			return this;
+		}
+		
+		public MMap set(Square square, int face) {
+			return this.set(square.rowNum, square.colNum, face);
+		}
+		
+		public int get(int rowNum, int colNum) {
+			return this.faces[rowNum][colNum];
+		}
+		
+		public int get(Square square) {
+			return this.get(square.rowNum, square.colNum);
+		}
+		
+		public int numRows() {
+			return this.faces.length;
+		}
+		
+		public int numCols() {
+			return this.faces[0].length;
+		}
+	}
+	
+	private static class Die {
+		private int[] faces = new int[6];
+		private Square currentSquare = Square.of(0, 0);
+		
+		public Die(int rowNum, int colNum) {
+			this.currentSquare = Square.of(rowNum, colNum);
+		}
+		
+		/**
+		 * 해당 주사위를 입력받은 방향으로 굴린다.<br/>
+		 * 해당 주사위를 입력받은 방향으로 굴릴 수 없는 경우 null을 반환한다.
+		 * @param direction
+		 * @param map
+		 * @return
+		 */
+		public Die rollIn(Direction direction, MMap map) {
+			Square nextSquare = this.currentSquare.nextSquareIn(direction, map.numRows(), map.numCols());
+			if (nextSquare==null)
+				return null;
+			this.currentSquare = nextSquare;
+			
+			switch (direction) {
+			case EAST: {
+				int tmp = this.faces[FaceName.RIGHT.ordinal()];
+				this.faces[FaceName.RIGHT.ordinal()] = this.faces[FaceName.TOP.ordinal()];
+				this.faces[FaceName.TOP.ordinal()] = this.faces[FaceName.LEFT.ordinal()];
+				this.faces[FaceName.LEFT.ordinal()] = this.faces[FaceName.BOTTOM.ordinal()];
+				this.faces[FaceName.BOTTOM.ordinal()] = tmp;
+				break;
+			}
+			case WEST: {
+				int tmp = this.faces[FaceName.LEFT.ordinal()];
+				this.faces[FaceName.LEFT.ordinal()] = this.faces[FaceName.TOP.ordinal()];
+				this.faces[FaceName.TOP.ordinal()] = this.faces[FaceName.RIGHT.ordinal()];
+				this.faces[FaceName.RIGHT.ordinal()] = this.faces[FaceName.BOTTOM.ordinal()];
+				this.faces[FaceName.BOTTOM.ordinal()] = tmp;
+				break;
+			}
+			case NORTH: {
+				int tmp = this.faces[FaceName.BACK.ordinal()];
+				this.faces[FaceName.BACK.ordinal()] = this.faces[FaceName.TOP.ordinal()];
+				this.faces[FaceName.TOP.ordinal()] = this.faces[FaceName.FRONT.ordinal()];
+				this.faces[FaceName.FRONT.ordinal()] = this.faces[FaceName.BOTTOM.ordinal()];
+				this.faces[FaceName.BOTTOM.ordinal()] = tmp;
+				break;
+			}
+			case SOUTH: {
+				int tmp = this.faces[FaceName.FRONT.ordinal()];
+				this.faces[FaceName.FRONT.ordinal()] = this.faces[FaceName.TOP.ordinal()];
+				this.faces[FaceName.TOP.ordinal()] = this.faces[FaceName.BACK.ordinal()];
+				this.faces[FaceName.BACK.ordinal()] = this.faces[FaceName.BOTTOM.ordinal()];
+				this.faces[FaceName.BOTTOM.ordinal()] = tmp;
+				break;
+			}	
+			} //switch direction
+			
+			if (map.get(this.currentSquare)==0) {
+				map.set(this.currentSquare, this.faces[FaceName.BOTTOM.ordinal()]);
+			} else {
+				this.faces[FaceName.BOTTOM.ordinal()] = map.get(this.currentSquare);
+				map.set(this.currentSquare, 0);
+			}
+			return this;
+		}
+		
+		public int get(FaceName faceName) {
+			return this.faces[faceName.ordinal()];
+		}
+	}
+	
+
+	public static void main(String[] args) {
+		java.util.Scanner sc = new java.util.Scanner(System.in);
+		int numRows = sc.nextInt();
+		int numCols = sc.nextInt();
+		MMap map = new MMap(numRows, numCols);
+		int rowNum = sc.nextInt();
+		int colNum = sc.nextInt();
+		Die currentDie = new Die(rowNum, colNum);
+		int numRolls = sc.nextInt();
+		int face = 0;
+		for (rowNum=0; rowNum<numRows; rowNum++) {
+			for (colNum=0; colNum<numCols; colNum++) {
+				face = sc.nextInt();
+				map.set(rowNum, colNum, face);
+			} //colNum loop
+		} //rowNum loop
+		int[] orders = new int[numRolls];
+		for (int i=0; i<numRolls; i++) {
+			orders[i] = sc.nextInt();
+		} //i loop
+		sc.close();
+		java.util.List<Integer> results = new java.util.ArrayList<>();
+		for (int order:orders) {
+			if (currentDie.rollIn(Direction.values()[order], map)!=null) {
+				results.add(currentDie.get(FaceName.TOP));
+			}
+		}
+		results.forEach(num -> System.out.println(num));
+	}
+
+}
