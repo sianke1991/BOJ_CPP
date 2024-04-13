@@ -1,0 +1,160 @@
+import java.util.*;
+
+public class Main {
+	
+	private static class Robot implements Comparable<Robot> {
+		/**해당 로봇이 컨베이어 벨트에 올라온 세대 수: 세대 수가 낮을 수록 더 먼저 컨베이어 벨트에 올려진 것이다.*/
+		public final int generationNumber;
+		/**해당 로봇이 위치한 컨베이어 벨트 칸의 번호*/
+		public int cellNumber;
+		
+		private Robot(int generationNumber) {
+			this.generationNumber = generationNumber;
+			this.cellNumber = 0;
+		}
+		
+		/**
+		 * 새로운 로봇을 컨베이어 벨트에 올린다.<br/>
+		 * 만약 로봇을 컨베이어 벨트에 올릴 수 없는 경우 false를 반환한다.
+		 * @param generationNumber
+		 */
+		public static boolean loadNewRobot(int generationNumber) {
+			if (durability[0]==0)
+				return false;
+			Robot newRobot = new Robot(generationNumber);
+			durability[0]--;
+			numRobots[0]++;
+			robotsBefore.add(newRobot);
+			if (durability[0]==0)
+				numBrokenCells++;
+			return true;
+		}
+		
+		
+		private Robot(int generationNumber, int cellNumber) {
+			this.generationNumber = generationNumber;
+			this.cellNumber = cellNumber;
+		}
+		
+		/**
+		 * 해당 로봇을 오른쪽으로 한 칸 이동시킨다.<br/>
+		 * 만약 로봇이 오른쪽으로 한 칸 이동할 수 없는 경우 false를 반환한다.
+		 * @return
+		 */
+		public boolean moveCell() {
+			int newCellNumber = (this.cellNumber+1)%(2*beltLength);
+			if (numRobots[newCellNumber]!=0 || durability[newCellNumber]==0) {
+				robotsAfter.add(this);
+				return false;
+			}
+			numRobots[this.cellNumber]--;
+			durability[newCellNumber]--;
+			if (newCellNumber!=beltLength-1) {	
+				numRobots[newCellNumber]++;
+				robotsAfter.add(new Robot(this.generationNumber, newCellNumber));
+			}
+			if (durability[newCellNumber]==0)
+				numBrokenCells++;
+			return true;
+		}
+		
+		@Override
+		public int compareTo(Robot that) {
+			int cmpr = Integer.compare(this.generationNumber, that.generationNumber);
+			if (cmpr!=0)
+				return cmpr;
+			else
+				return Integer.compare(that.cellNumber, this.cellNumber);
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof Robot))
+				return false;
+			Robot that = (Robot) o;
+			return this.generationNumber==that.generationNumber && this.cellNumber==that.cellNumber;
+		}
+		
+		@Override
+		public int hashCode() {
+			return this.generationNumber*31+this.cellNumber;
+		}
+		
+		@Override
+		public String toString() {
+			return new StringBuffer().append('(').append(this.generationNumber).append(", ").append(this.cellNumber).append(')').toString();
+		}
+	}
+	
+	/**현재 세대 수(번호)*/
+	private static int currentGenerationNumber;
+	/**컨베이어 벨트의 길이*/
+	private static int beltLength;
+	/**컨베이어 벨트 각 칸의 내구도: 인덱스 0번이 로봇을 올리는 곳, 인덱스 beltLength-1이 로봇을 내리는 곳, 인덱스 2*beltLength-1에서는 인덱스 0번으로 이동*/
+	private static final int[] durability = new int[201];
+	/**컨베이어 벨트가 한 칸 이동할 때 내구도 이동을 구현하기 위한 임시 배열*/
+	private static final int[] tmpDurability = new int[201];
+	/**컨베이어 벨트 내구도가 0이 된 칸의 개수*/
+	private static int numBrokenCells;
+	/**컨베이어 벨트 내구도가 0이 된 칸의 개수의 상한치*/
+	private static int numBrokenCellsLimit;
+	/**컨베이어 벨트 각 칸에 올라간 로봇의 개수*/
+	private static final int[] numRobots = new int[201];
+	/**해당 움직임을 적용하기 전의 로봇 집합*/
+	private static final Set<Robot> robotsBefore = new TreeSet<>();
+	/**해당 움직임을 적용한 후의 로봇 집합*/
+	private static final Set<Robot> robotsAfter = new TreeSet<>();
+	
+	private static final List<Robot> robotsRemoved = new ArrayList<>();
+	
+	
+	private static boolean procedure() {
+		//step a. 현재 세대 수를 1 증가 시킨다.
+		currentGenerationNumber++;
+		
+		//step b. 컨베이어 벨트가 한 칸 이동한다. (로봇 이동 후 내구도 shift를 수행한다.)
+		robotsRemoved.clear();
+		for (Robot robot:robotsBefore) {
+			numRobots[robot.cellNumber]--;
+			robot.cellNumber++;
+			if (robot.cellNumber==beltLength-1)
+				robotsRemoved.add(robot);
+			else
+				numRobots[robot.cellNumber]++;
+		}
+		robotsBefore.removeAll(robotsRemoved);
+		System.arraycopy(durability, 0, tmpDurability, 1, 2*beltLength-1);
+		tmpDurability[0] = durability[2*beltLength-1];
+		System.arraycopy(tmpDurability, 0, durability, 0, 2*beltLength);
+		
+		
+		//step c. 로봇이 한 칸 이동한다.
+		robotsAfter.clear();
+		for (Robot robot:robotsBefore) {
+			robot.moveCell();
+		}
+		robotsBefore.clear();
+		robotsBefore.addAll(robotsAfter);
+		
+		//step d. 새 로봇을 0번 칸에 올린다.
+		Robot.loadNewRobot(currentGenerationNumber);
+		
+		//step e. 이 작업 후 내구도가 상한을 넘지 않으면 true를 반환한다.
+		return numBrokenCells<numBrokenCellsLimit;
+	}
+	
+	
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		beltLength = sc.nextInt();
+		numBrokenCellsLimit = sc.nextInt();
+		for (int i=0; i<beltLength*2; i++) {
+			durability[i] = sc.nextInt();
+		}
+		sc.close();
+		while (procedure());
+		System.out.println(currentGenerationNumber);
+	}
+
+}
