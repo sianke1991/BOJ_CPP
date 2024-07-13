@@ -1,0 +1,33 @@
+import java.util.*;
+public class Main {
+
+//학생들의 키를 수열로 표현할 때
+//단체 티셔츠 제작 비용은 해당 수열의 계차의 합으로 생각할 수 있다.
+//단, K개의 조를 만드므로 N-1 개의 계차 중 K-1 개는 무시할 수 있다.
+//따라서 N-1 개의 계차 중 가장 큰 K-1 개를 뽑아서 계차의 합에서 제거한다.
+//수열에서 총 계차의 합은 [해당 수열의 마지막 원소] - [해당 수열의 처음 원소]로 구할 수 있다.
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		int N = sc.nextInt();
+		int K = sc.nextInt();
+		int heightOf[] = new int[N];
+		for (int i=0; i<N; i++) {
+			heightOf[i] = sc.nextInt();
+		}
+		sc.close();
+		// 가장 큰 학생과 가장 작은 학생의 키의 차이
+		int totalDiff = heightOf[N-1] - heightOf[0];
+		// 이웃한 두 학생의 키의 차이
+		int diff[] = new int[N-1];
+		for (int i=0; i<N-1; i++) {
+			diff[i] = heightOf[i+1]-heightOf[i];
+		}
+		Arrays.sort(diff);
+		// diff 내 원소 중 가장 큰 (K-1) 개의 원소의 합
+		int sumMaxDiffs = 0;
+		for (int i=0; i<K-1; i++) {
+			sumMaxDiffs += diff[N-2-i];
+		}
+		System.out.println(totalDiff-sumMaxDiffs);
+	}
+}

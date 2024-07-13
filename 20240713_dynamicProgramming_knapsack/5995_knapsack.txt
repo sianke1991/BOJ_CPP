@@ -1,0 +1,36 @@
+public class Main {
+	//각 아이템의 무게
+	private static int arr[] = new int[501];
+	//특정 무게를 담는 경우의 수
+	private static int weight[] = new int[45001];
+	
+	public static void main(String[] args) {
+		/**
+		 * 배낭 문제
+		 * 배낭에 최대로 물건을 넣기
+		 * 배낭에 아무것도 없는 경우 초기화
+		 */
+		java.util.Scanner sc = new java.util.Scanner(System.in);
+		int h, n;
+		h = sc.nextInt();
+		n = sc.nextInt();
+		
+		int ans = 0; //정답 저장
+		for (int i=0; i<n; i++) {
+			arr[i] = sc.nextInt();
+		}
+		sc.close();
+		for (int i=0; i<n; i++) {
+			for (int j=0; j<=h; j++) {
+				if (weight[j]!=0 && j+arr[i]>=h) {
+					//지금까지 (i+1) 번까지 물건을 넣었을 때
+					//j 무게가 되었으면서
+					//지금 물건을 넣을 수 있다면-
+					weight[arr[i]+j]++;
+					ans = Math.max(arr[i]+j, ans);
+				}
+			} //j loop
+		} //i loop
+		System.out.println(ans);
+	}
+}
