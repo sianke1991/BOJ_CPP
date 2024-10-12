@@ -1,0 +1,57 @@
+import java.io.*;
+class Main {
+
+	static int numStrings;
+	static String[] strings;
+	
+	static void input() {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+			numStrings = Integer.parseInt(br.readLine());
+			strings = new String[numStrings];
+			for (int i=0; i<numStrings; i++)
+				strings[i] = br.readLine();
+		} catch (IOException ioe) {}
+	}
+	
+	static boolean checkPalindrome(String str) {
+		final char[] chs = str.toCharArray();
+		final int len = chs.length;
+		for (int i=0, lim=len>>1; i<lim; i++) {
+			int j = len-1-i;
+			if (chs[i]!=chs[j]) return false;
+		} //i loop
+		return true;
+	}
+	
+	static boolean checkPseudoPalindrome(String str) {
+		final char[] chs = str.toCharArray();
+		final int len = chs.length;
+		for (int i=0, lim=len>>1; i<lim; i++) {
+			int j = len-1-i;
+			if (chs[i]!=chs[j]) {
+				String removeI = new StringBuilder(str).replace(i, i+1, "").toString();
+				if (checkPalindrome(removeI)) return true;
+				String removeJ = new StringBuilder(str).replace(j, j+1, "").toString();
+				if (checkPalindrome(removeJ)) return true;
+				return false;
+			}
+		} //i loop
+		return true;
+	}
+	
+	public static void main(String[] args) {
+		input();
+		int[] results = new int[numStrings];
+		for (int i=0; i<numStrings; i++) {
+			if (checkPalindrome(strings[i])) results[i] = 0;
+			else if (checkPseudoPalindrome(strings[i])) results[i] = 1;
+			else results[i] = 2;
+		} //i loop
+		StringBuilder output = new StringBuilder();
+		for (int result:results)
+			output.append(result).append('\n');
+		try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out))) {
+			bw.write(output.toString());
+		} catch (IOException ioe) {}
+	}
+}
